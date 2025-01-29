@@ -1,14 +1,11 @@
 <?php
-require 'config/database.php'; // Inclui a conexão com o banco
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../classes/Pessoa.php';
+require_once __DIR__ . '/../classes/PessoaDAO.php';
 
-// Busca os dados da tabela 'pessoas'
-try {
-    $sql = "SELECT * FROM pessoas ORDER BY id ASC";
-    $stmt = $pdo->query($sql);
-    $pessoas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Erro ao buscar dados: " . $e->getMessage());
-}
+
+$pessoaDAO = new PessoaDAO($pdo);
+$pessoas = $pessoaDAO->getAll();
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

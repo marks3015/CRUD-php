@@ -1,47 +1,35 @@
 <?php
-require 'config/database.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../classes/Pessoa.php';
+require_once __DIR__ . '/../classes/PessoaDAO.php';
 
-// Verifica se o ID foi passado pela URL
+$pessoaDAO = new PessoaDAO($pdo);
+
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $id = $_GET['id'];
+    $id = (int)$_GET['id'];
+    $pessoaData = $pessoaDAO->getById($id);
 
-    try {
-        // Busca os dados da pessoa pelo ID
-        $sql = "SELECT * FROM pessoas WHERE id = :id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $pessoa = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$pessoa) {
-            die("Registro não encontrado.");
-        }
-    } catch (PDOException $e) {
-        die("Erro ao buscar dados: " . $e->getMessage());
+    if (!$pessoaData) {
+        die("Registro não encontrado.");
     }
+    $pessoa = new Pessoa($pessoaData['nome'], $pessoaData['email'], $pessoaData['id']);
 } else {
     header("Location: index.php");
     exit();
 }
 
-// Processa o formulário ao enviar os dados
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = $_POST['nome'];
     $email = $_POST['email'];
-
+    
     if (!empty($nome) && !empty($email)) {
-        try {
-            $sql = "UPDATE pessoas SET nome = :nome, email = :email WHERE id = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':nome', $nome);
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-
+        $pessoa->setNome($nome);
+        $pessoa->setEmail($email);
+        if ($pessoaDAO->update($pessoa)) {
             header("Location: index.php?success=1");
             exit();
-        } catch (PDOException $e) {
-            die("Erro ao atualizar registro: " . $e->getMessage());
+        } else {
+            $erro = "Erro ao atualizar a pessoa.";
         }
     } else {
         $erro = "Por favor, preencha todos os campos.";
@@ -66,11 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form action="" method="POST">
                 <div class="mb-3">
                     <label for="nome" class="form-label">Nome</label>
-                    <input type="text" class="form-control" id="nome" name="nome" value="<?= htmlspecialchars($pessoa['nome']) ?>" required>
+                    <input type="text" class="form-control" id="nome" name="nome" value="<?= htmlspecialchars($pessoa->getNome()) ?>" required>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($pessoa['email']) ?>" required>
+                    <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($pessoa->getEmail()) ?>" required>
                 </div>
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary">Salvar Alterações</button>

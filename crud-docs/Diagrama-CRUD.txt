@@ -1,0 +1,28 @@
+sequenceDiagram
+
+participant Usuário
+participant LocalHost
+participant Banco de dados
+
+LocalHost -->> Usuário: Exibe tabela de pessoas e funcionalidades de CRUD
+alt Botão criar pressionado 
+    LocalHost -->> Usuário: Exibe tela de cadastro de pessoa
+    Usuário ->> LocalHost: Preenche os campos de Nome e e-mail
+    LocalHost ->> Banco de dados: Realiza inserção na tabela 
+    LocalHost -->> Usuário: Exibe tabela atualizada
+end
+alt Botão editar pressionado
+    LocalHost -->> Usuário: Exibe tela de edição de pessoa
+    Usuário ->> LocalHost: Edita os campos de Nome e e-mail
+    LocalHost ->> Banco de dados: Realiza edição na tabela 
+    LocalHost -->> Usuário: Exibe tabela atualizada
+end
+alt Botão deletar pressionado
+    LocalHost -->> Usuário: Exibe pop-up de confirmação para exclusão
+    alt Botão de confirmação pressionado
+        LocalHost ->> Banco de dados: Realiza exclusão na tabela 
+    end
+    alt Botão cancelar pressionado
+        LocalHost -->> Usuário: Exibe tabela
+    end
+end

@@ -12,3 +12,4 @@ extension=pdo_pgsql
 extension=pgsql
 
 Isso ativa a extensão PDO (PHP Data Objects) para PostgreSQL que foi utilizada para estabelecer conexao do php ao postgre.
+![ds_CRUD](https://github.com/user-attachments/assets/f3f29199-ee2d-43f9-ac4c-a45283a25149)
